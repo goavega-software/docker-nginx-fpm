@@ -22,15 +22,32 @@ ENV SSH_PASSWD "root:Docker!"
 
 WORKDIR $DOCKER_BUILD_DIR
 
-COPY ./gpg_keys/nginx_signing.key ./
+#---------------|
+# nginx         |
+#---------------|
+RUN apt-get update \
+	&& apt-get install --no-install-recommends --no-install-suggests -y gnupg \
+	&& \
+	NGINX_GPGKEY=573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62; \
+	found=''; \
+	for server in \
+		ha.pool.sks-keyservers.net \
+		hkp://keyserver.ubuntu.com:80 \
+		hkp://p80.pool.sks-keyservers.net:80 \
+		pgp.mit.edu \
+	; do \
+		echo "Fetching GPG key $NGINX_GPGKEY from $server"; \
+		apt-key adv --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
+	done; \
+	test -z "$found" && echo >&2 "error: failed to fetch GPG key $NGINX_GPGKEY" && exit 1; \
+	apt-get remove --purge -y gnupg && apt-get -y --purge autoremove && rm -rf /var/lib/apt/lists/* \
+	&& echo "deb http://nginx.org/packages/debian/ stretch nginx" >> /etc/apt/sources.list \
+	&& apt-get update \
+	&& apt-get install --no-install-recommends --no-install-suggests -y \
+						nginx=${NGINX_VERSION} \
+	&& gettext-base
 
-RUN set -ex \
-&& apt-key add nginx_signing.key \
-&& echo "deb http://nginx.org/packages/ubuntu/ xenial nginx" >> /etc/apt/sources.list \
-&& apt-get update \
-&& apt-get install --no-install-recommends --no-install-suggests -y vim ca-certificates gettext-base nginx=${NGINX_VERSION}
-
-RUN set -ex \
+RUN set -e \
 # apt-get update
 && apt-get install --no-install-recommends --no-install-suggests -y php7.0-fpm=${FPM_VERSION} php7.0-mysql=${FPM_VERSION} \
 ## install extensions that we might need
