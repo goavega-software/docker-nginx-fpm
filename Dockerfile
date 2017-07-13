@@ -40,12 +40,10 @@ RUN apt-get update \
 		apt-key adv --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
 	done; \
 	test -z "$found" && echo >&2 "error: failed to fetch GPG key $NGINX_GPGKEY" && exit 1; \
-	apt-get remove --purge -y gnupg && apt-get -y --purge autoremove && rm -rf /var/lib/apt/lists/* \
-	&& echo "deb http://nginx.org/packages/debian/ stretch nginx" >> /etc/apt/sources.list \
+	apt-get -y --purge autoremove && rm -rf /var/lib/apt/lists/* \
+	&& echo "deb http://nginx.org/packages/ubuntu/ xenial nginx" >> /etc/apt/sources.list \
 	&& apt-get update \
-	&& apt-get install --no-install-recommends --no-install-suggests -y \
-						nginx=${NGINX_VERSION} \
-	&& gettext-base
+	&& apt-get install --no-install-recommends --no-install-suggests -y nginx=${NGINX_VERSION} gettext-base
 
 RUN set -e \
 # apt-get update
@@ -90,8 +88,9 @@ COPY ./wwwroot/* /home/site/wwwroot/
 COPY ./entrypoint.sh /usr/local/bin/
 COPY ./confs/sshd_config /etc/ssh/
 COPY ./confs/10-opcache.ini ${php_ini_scan_dir}
-RUN chmod u+x /usr/local/bin/entrypoint.sh \
-&& rm nginx_signing.key
+
+RUN chmod u+x /usr/local/bin/entrypoint.sh
+
 WORKDIR ${APP_HOME}
 
 STOPSIGNAL SIGTERM
