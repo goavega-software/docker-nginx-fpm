@@ -18,13 +18,11 @@ set_var_if_null(){
 	fi
 }
 
-update_settings(){
-	set_var_if_null "DATABASE_NAME" "appdb"
-	set_var_if_null "DATABASE_USERNAME" "appuser"
-	set_var_if_null "DATABASE_PASSWORD" "MS173m_QN"
-	set_var_if_null 'PHPMYADMIN_USERNAME' 'phpmyadmin'
-	set_var_if_null 'PHPMYADMIN_PASSWORD' 'MS173m_QN'
-}
+#update_settings(){
+#	set_var_if_null "DATABASE_NAME" "www"
+#	set_var_if_null "DATABASE_USERNAME" "appuser"
+#	set_var_if_null "DATABASE_PASSWORD" "MS173m_QN"
+#}
 
 set -e
 echo 'INFO: starting ssh'
@@ -33,6 +31,8 @@ test ! -d "$APP_HOME" && echo "INFO: $APP_HOME not found. creating ..." && mkdir
 chown -R nginx:nginx $APP_HOME
 test ! -d "$NGINX_LOG_DIR" && echo "INFO: $NGINX_LOG_DIR not found. creating ..." && mkdir -p "$NGINX_LOG_DIR"
 chown -R nginx:nginx $NGINX_LOG_DIR
+echo 'INFO: exporting variables'
+wp_env.sh
 echo 'INFO: starting fpm'
 service php7.0-fpm start
 echo 'INFO: starting nginx'

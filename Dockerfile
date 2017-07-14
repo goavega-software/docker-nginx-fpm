@@ -76,8 +76,8 @@ RUN set -ex && \
 	sed -i -e "s/listen.group = www-data/listen.group = nginx/g" ${fpm_pool} && \
 	sed -i -e "s/user = www-data/user = nginx/g" ${fpm_pool} && \
 	sed -i -e "s/group = www-data/group = nginx/g" ${fpm_pool} && \
-	sed -i -e "s/;catch_workers_output\s*=\s*no/catch_workers_output = yes/g" ${php_conf} 
-#	sed -i -e "s/;error_log\s*=\s*syslog/error_log = ${NGINX_LOG_DIR}fpm-error.log/g" ${php_conf}
+	sed -i -e "s/;catch_workers_output\s*=\s*no/catch_workers_output = yes/g" ${fpm_pool} && \
+	sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" ${fpm_pool}
 #link log files to /home
 RUN rm -rf /var/log/nginx/ \
 && mkdir -p ${NGINX_LOG_DIR} \
@@ -88,7 +88,9 @@ COPY ./wwwroot/* /home/site/wwwroot/
 COPY ./entrypoint.sh /usr/local/bin/
 COPY ./confs/sshd_config /etc/ssh/
 COPY ./confs/10-opcache.ini ${php_ini_scan_dir}
+COPY ./wp_env.sh /usr/local/bin/
 
+RUN chmod u+x /usr/local/bin/wp_env.sh
 RUN chmod u+x /usr/local/bin/entrypoint.sh
 
 WORKDIR ${APP_HOME}
