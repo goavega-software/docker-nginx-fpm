@@ -90,6 +90,10 @@ COPY ./confs/sshd_config /etc/ssh/
 COPY ./confs/10-opcache.ini ${php_ini_scan_dir}
 COPY ./wp_env.sh /usr/local/bin/
 
+#hostname that nginx listens to
+ENV NGINX_HOST "_"
+ENV NGINX_PERM_REDIR "krimzen.com"
+
 RUN chmod u+x /usr/local/bin/wp_env.sh
 RUN chmod u+x /usr/local/bin/entrypoint.sh
 

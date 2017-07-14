@@ -12,6 +12,7 @@ update_settings(){
       set_var_if_null "DB_USER" "db_user"
       set_var_if_null "DB_PWD" "x"
       set_var_if_null "DB_HOST" "localhost"
+      set_var_if_null "NGINX_HOST" "_"
 }
 
 set -ex
@@ -20,3 +21,4 @@ echo "env[DB_USER]=$DB_USER" >> ${fpm_pool}
 echo "env[DB_PWD]=$DB_PWD" >> ${fpm_pool}
 echo "env[DB_HOST]=$DB_HOST" >> ${fpm_pool}
 echo "env[DB_NAME]=$DB_NAME" >> ${fpm_pool}
+sed -i -e "s/server_name _/server_name ${NGINX_HOST}/g" /etc/nginx/conf.d/default.conf
