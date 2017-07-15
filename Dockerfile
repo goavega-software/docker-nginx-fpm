@@ -44,25 +44,24 @@ RUN apt-get update \
 	&& echo "deb http://nginx.org/packages/ubuntu/ xenial nginx" >> /etc/apt/sources.list \
 	&& apt-get update \
 	&& apt-get install --no-install-recommends --no-install-suggests -y nginx=${NGINX_VERSION} gettext-base
-
+#--------------|
+# php-fpm + mod|
+#--------------|
 RUN set -e \
-# apt-get update
+&& apt-get update \
 && apt-get install --no-install-recommends --no-install-suggests -y php7.0-fpm=${FPM_VERSION} php7.0-mysql=${FPM_VERSION} \
 ## install extensions that we might need
 # Wordpress Requirements
 && apt-get -y --no-install-recommends --no-install-suggests install php7.0-xml=${FPM_VERSION} php7.0-mbstring=${FPM_VERSION} php7.0-bcmath=${FPM_VERSION} php7.0-zip=${FPM_VERSION} php7.0-curl=${FPM_VERSION} php7.0-gd=${FPM_VERSION} php7.0-intl=${FPM_VERSION} php7.0-imap=${FPM_VERSION} php7.0-mcrypt=${FPM_VERSION} php7.0-pspell=${FPM_VERSION} php7.0-recode=${FPM_VERSION} php7.0-tidy=${FPM_VERSION} php7.0-xmlrpc=${FPM_VERSION} \
-##
-## ssh
-&& apt-get install -y --no-install-recommends openssh-server npm \
-&& npm install -g bower \
-&& npm install -g gulp \
+#-------------|
+# ssh         |
+#-------------|
+&& apt-get install -y --no-install-recommends openssh-server \
 && echo "$SSH_PASSWD" | chpasswd \
-##ssh
 #clean up
 && rm -rf /var/lib/apt/lists/* \
 && apt-get purge -y \
 && apt-get autoremove -y \
-#clean up
 && echo "daemon off;" >> ${NGINX_CONF}
 
 # Hacks Nginx and php-fpm config (docker nginx runs nginx user - change fpm to use same user)
