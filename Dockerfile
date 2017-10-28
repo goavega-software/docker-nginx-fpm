@@ -3,7 +3,7 @@ LABEL MAINTAINER Goavega Docker Maintainers
 #setup environment variables
 #version variables
 ENV NGINX_VERSION 1.12.1-1~xenial
-ENV FPM_VERSION 7.0.18-0ubuntu0.16.04.1
+ENV FPM_VERSION 7.0.22-0ubuntu0.16.04.1
 ENV PHP_VERSION 1:7.0+35ubuntu6
 ENV DOCKER_BUILD_DIR /dockerbuild
 
@@ -52,11 +52,11 @@ RUN set -e \
 && apt-get install --no-install-recommends --no-install-suggests -y php7.0-fpm=${FPM_VERSION} php7.0-mysql=${FPM_VERSION} \
 ## install extensions that we might need
 # Wordpress Requirements
-&& apt-get -y --no-install-recommends --no-install-suggests install php7.0-xml=${FPM_VERSION} php7.0-mbstring=${FPM_VERSION} php7.0-bcmath=${FPM_VERSION} php7.0-zip=${FPM_VERSION} php7.0-curl=${FPM_VERSION} php7.0-gd=${FPM_VERSION} php7.0-intl=${FPM_VERSION} php7.0-imap=${FPM_VERSION} php7.0-mcrypt=${FPM_VERSION} php7.0-pspell=${FPM_VERSION} php7.0-recode=${FPM_VERSION} php7.0-tidy=${FPM_VERSION} php7.0-xmlrpc=${FPM_VERSION} \
+&& apt-get -y --no-install-recommends --no-install-suggests install php7.0-xml=${FPM_VERSION} php7.0-mbstring=${FPM_VERSION} php7.0-bcmath=${FPM_VERSION} php7.0-zip=${FPM_VERSION} php7.0-curl=${FPM_VERSION} php7.0-gd=${FPM_VERSION} php7.0-intl=${FPM_VERSION} php7.0-imap=${FPM_VERSION} php7.0-pspell=${FPM_VERSION} php7.0-recode=${FPM_VERSION} php7.0-tidy=${FPM_VERSION} php7.0-xmlrpc=${FPM_VERSION} \
 #-------------|
 # ssh         |
 #-------------|
-&& apt-get install -y --no-install-recommends openssh-server \
+&& apt-get install -y --no-install-recommends openssh-server supervisor \
 && echo "$SSH_PASSWD" | chpasswd \
 #clean up
 && rm -rf /var/lib/apt/lists/* \
