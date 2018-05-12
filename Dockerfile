@@ -3,7 +3,7 @@ LABEL MAINTAINER Goavega Docker Maintainers
 #setup environment variables
 #version variables
 ENV NGINX_VERSION 1.12.1-1~xenial
-ENV FPM_VERSION 7.0.22-0ubuntu0.16.04.1
+ENV FPM_VERSION 7.0.28-0ubuntu0.16.04.1
 ENV PHP_VERSION 1:7.0+35ubuntu6
 ENV DOCKER_BUILD_DIR /dockerbuild
 
@@ -31,13 +31,13 @@ RUN apt-get update \
 	NGINX_GPGKEY=573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62; \
 	found=''; \
 	for server in \
-		ha.pool.sks-keyservers.net \
-		hkp://keyserver.ubuntu.com:80 \
-		hkp://p80.pool.sks-keyservers.net:80 \
-		pgp.mit.edu \
+	ha.pool.sks-keyservers.net \
+	hkp://keyserver.ubuntu.com:80 \
+	hkp://p80.pool.sks-keyservers.net:80 \
+	pgp.mit.edu \
 	; do \
-		echo "Fetching GPG key $NGINX_GPGKEY from $server"; \
-		apt-key adv --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
+	echo "Fetching GPG key $NGINX_GPGKEY from $server"; \
+	apt-key adv --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
 	done; \
 	test -z "$found" && echo >&2 "error: failed to fetch GPG key $NGINX_GPGKEY" && exit 1; \
 	apt-get -y --purge autoremove && rm -rf /var/lib/apt/lists/* \
@@ -48,21 +48,21 @@ RUN apt-get update \
 # php-fpm + mod|
 #--------------|
 RUN set -e \
-&& apt-get update \
-&& apt-get install --no-install-recommends --no-install-suggests -y php7.0-fpm=${FPM_VERSION} php7.0-mysql=${FPM_VERSION} \
-## install extensions that we might need
-# Wordpress Requirements
-&& apt-get -y --no-install-recommends --no-install-suggests install php7.0-xml=${FPM_VERSION} php7.0-mbstring=${FPM_VERSION} php7.0-bcmath=${FPM_VERSION} php7.0-zip=${FPM_VERSION} php7.0-curl=${FPM_VERSION} php7.0-gd=${FPM_VERSION} php7.0-intl=${FPM_VERSION} php7.0-imap=${FPM_VERSION} php7.0-pspell=${FPM_VERSION} php7.0-recode=${FPM_VERSION} php7.0-tidy=${FPM_VERSION} php7.0-xmlrpc=${FPM_VERSION} \
-#-------------|
-# ssh         |
-#-------------|
-&& apt-get install -y --no-install-recommends openssh-server supervisor \
-&& echo "$SSH_PASSWD" | chpasswd \
-#clean up
-&& rm -rf /var/lib/apt/lists/* \
-&& apt-get purge -y \
-&& apt-get autoremove -y \
-&& echo "daemon off;" >> ${NGINX_CONF}
+	&& apt-get update \
+	&& apt-get install --no-install-recommends --no-install-suggests -y php7.0-fpm=${FPM_VERSION} php7.0-mysql=${FPM_VERSION} \
+	## install extensions that we might need
+	# Wordpress Requirements
+	&& apt-get -y --no-install-recommends --no-install-suggests install php7.0-xml=${FPM_VERSION} php7.0-mbstring=${FPM_VERSION} php7.0-bcmath=${FPM_VERSION} php7.0-zip=${FPM_VERSION} php7.0-curl=${FPM_VERSION} php7.0-gd=${FPM_VERSION} php7.0-intl=${FPM_VERSION} php7.0-imap=${FPM_VERSION} php7.0-pspell=${FPM_VERSION} php7.0-recode=${FPM_VERSION} php7.0-tidy=${FPM_VERSION} php7.0-xmlrpc=${FPM_VERSION} \
+	#-------------|
+	# ssh         |
+	#-------------|
+	&& apt-get install -y --no-install-recommends openssh-server supervisor \
+	&& echo "$SSH_PASSWD" | chpasswd \
+	#clean up
+	&& rm -rf /var/lib/apt/lists/* \
+	&& apt-get purge -y \
+	&& apt-get autoremove -y \
+	&& echo "daemon off;" >> ${NGINX_CONF}
 
 # Hacks Nginx and php-fpm config (docker nginx runs nginx user - change fpm to use same user)
 RUN set -ex && \
@@ -79,8 +79,8 @@ RUN set -ex && \
 	sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" ${fpm_pool}
 #link log files to /home
 RUN rm -rf /var/log/nginx/ \
-&& mkdir -p ${NGINX_LOG_DIR} \
-&& ln -s /home/LogFiles/nginx /var/log/nginx
+	&& mkdir -p ${NGINX_LOG_DIR} \
+	&& ln -s /home/LogFiles/nginx /var/log/nginx
 #copy configs
 COPY ./confs/default.conf /etc/nginx/conf.d/
 COPY ./wwwroot/* /home/site/wwwroot/
