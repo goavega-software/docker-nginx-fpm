@@ -86,7 +86,7 @@ COPY ./confs/default.conf /etc/nginx/conf.d/
 COPY ./wwwroot/* /home/site/wwwroot/
 COPY ./entrypoint.sh /usr/local/bin/
 COPY ./confs/sshd_config /etc/ssh/
-COPY ./confs/10-opcache.ini ${php_ini_scan_dir}
+COPY ./confs/10-opcache.ini ${php_scan_ini_dir}
 COPY ./wp_env.sh /usr/local/bin/
 
 #hostname that nginx listens to
