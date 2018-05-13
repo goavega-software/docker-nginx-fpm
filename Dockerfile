@@ -101,4 +101,4 @@ WORKDIR ${APP_HOME}
 STOPSIGNAL SIGTERM
 EXPOSE 80 2222
 
-cmd ["entrypoint.sh"]
+CMD ["entrypoint.sh"]
