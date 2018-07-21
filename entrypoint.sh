@@ -25,15 +25,11 @@ set_var_if_null(){
 #}
 
 set -e
-echo 'INFO: starting ssh'
-service ssh start
 test ! -d "$APP_HOME" && echo "INFO: $APP_HOME not found. creating ..." && mkdir -p "$APP_HOME"
 chown -R nginx:nginx $APP_HOME
-test ! -d "$NGINX_LOG_DIR" && echo "INFO: $NGINX_LOG_DIR not found. creating ..." && mkdir -p "$NGINX_LOG_DIR"
-chown -R nginx:nginx $NGINX_LOG_DIR
 echo 'INFO: exporting variables'
 wp_env.sh
 echo 'INFO: starting fpm'
-service php7.0-fpm start
+php-fpm -D
 echo 'INFO: starting nginx'
 /usr/sbin/nginx
