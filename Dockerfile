@@ -203,7 +203,7 @@ RUN set -ex && \
 	sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" ${FPM_POOL_CONF}
 #copy configs
 COPY ./confs/default.conf /etc/nginx/conf.d/
-COPY ./wwwroot/* ${APP_HOME}}
+COPY ./wwwroot/* ${APP_HOME}/
 COPY ./entrypoint.sh /usr/local/bin/
 COPY ./confs/sshd_config /etc/ssh/
 COPY ./confs/opcache.ini ${php_scan_ini_dir}
