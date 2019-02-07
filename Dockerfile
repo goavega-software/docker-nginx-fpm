@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 LABEL MAINTAINER Goavega Docker Maintainers
 #setup environment variables
 #version variables
-ENV NGINX_VERSION 1.15.8-1~xenial
+ENV NGINX_VERSION 1.15.8-1~bionic
 ENV FPM_VERSION 7.2.10-0ubuntu0.18.04.1
 ENV PHP_VERSION 1:7.2+60ubuntu1
 ENV DOCKER_BUILD_DIR /dockerbuild
