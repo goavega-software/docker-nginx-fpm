@@ -1,20 +1,20 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 LABEL MAINTAINER Goavega Docker Maintainers
 #setup environment variables
 #version variables
-ENV NGINX_VERSION 1.12.1-1~xenial
-ENV FPM_VERSION 7.0.30-0ubuntu0.16.04.1
-ENV PHP_VERSION 1:7.0+35ubuntu6
+ENV NGINX_VERSION 1.15.8-1~~xenial
+ENV FPM_VERSION 7.2.10-0ubuntu0.18.04.1
+ENV PHP_VERSION 1:7.2+60ubuntu1
 ENV DOCKER_BUILD_DIR /dockerbuild
 
 #directories
 ENV NGINX_CONF /etc/nginx/nginx.conf
 ENV APP_HOME /home/site/wwwroot/
 #php confs
-ENV php_scan_ini_dir /etc/php/7.0/mods-available/
-ENV php_conf /etc/php/7.0/fpm/php.ini
-ENV fpm_conf /etc/php/7.0/fpm/php-fpm.conf
-ENV fpm_pool /etc/php/7.0/fpm/pool.d/www.conf
+ENV php_scan_ini_dir /etc/php/7.2/mods-available/
+ENV php_conf /etc/php/7.2/fpm/php.ini
+ENV fpm_conf /etc/php/7.2/fpm/php-fpm.conf
+ENV fpm_pool /etc/php/7.2/fpm/pool.d/www.conf
 ENV NGINX_LOG_DIR /home/LogFiles/nginx/
 # ssh
 ENV SSH_PASSWD "root:Docker!"
@@ -41,7 +41,7 @@ RUN apt-get update \
 	done; \
 	test -z "$found" && echo >&2 "error: failed to fetch GPG key $NGINX_GPGKEY" && exit 1; \
 	apt-get -y --purge autoremove && rm -rf /var/lib/apt/lists/* \
-	&& echo "deb http://nginx.org/packages/ubuntu/ xenial nginx" >> /etc/apt/sources.list \
+	&& echo "deb http://nginx.org/packages/ubuntu/ bionic nginx" >> /etc/apt/sources.list \
 	&& apt-get update \
 	&& apt-get install --no-install-recommends --no-install-suggests -y nginx=${NGINX_VERSION} gettext-base
 #--------------|
@@ -49,10 +49,10 @@ RUN apt-get update \
 #--------------|
 RUN set -e \
 	&& apt-get update \
-	&& apt-get install --no-install-recommends --no-install-suggests -y php7.0-fpm=${FPM_VERSION} php7.0-mysql=${FPM_VERSION} \
+	&& apt-get install --no-install-recommends --no-install-suggests -y php7.2-fpm=${FPM_VERSION} php7.2-mysql=${FPM_VERSION} \
 	## install extensions that we might need
 	# Wordpress Requirements
-	&& apt-get -y --no-install-recommends --no-install-suggests install php7.0-xml=${FPM_VERSION} php7.0-mbstring=${FPM_VERSION} php7.0-bcmath=${FPM_VERSION} php7.0-zip=${FPM_VERSION} php7.0-curl=${FPM_VERSION} php7.0-gd=${FPM_VERSION} php7.0-intl=${FPM_VERSION} php7.0-imap=${FPM_VERSION} php7.0-pspell=${FPM_VERSION} php7.0-recode=${FPM_VERSION} php7.0-tidy=${FPM_VERSION} php7.0-xmlrpc=${FPM_VERSION} \
+	&& apt-get -y --no-install-recommends --no-install-suggests install php7.2-xml=${FPM_VERSION} php7.2-mbstring=${FPM_VERSION} php7.2-bcmath=${FPM_VERSION} php7.2-zip=${FPM_VERSION} php7.2-curl=${FPM_VERSION} php7.2-gd=${FPM_VERSION} php7.2-intl=${FPM_VERSION} php7.2-imap=${FPM_VERSION} php7.2-pspell=${FPM_VERSION} php7.2-recode=${FPM_VERSION} php7.2-tidy=${FPM_VERSION} php7.2-xmlrpc=${FPM_VERSION} \
 	#-------------|
 	# ssh         |
 	#-------------|
@@ -70,7 +70,7 @@ RUN set -ex && \
 	sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = 8M/g" ${php_conf} && \
 	sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 8M/g" ${php_conf} && \
 	sed -i -e "s/variables_order = \"GPCS\"/variables_order = \"EGPCS\"/g" ${php_conf} && \
-	sed -i -e "s/listen = 127.0.0.1:9000/listen = \/run\/php7.0-fpm.sock/g" ${fpm_pool} && \
+	sed -i -e "s/listen = 127.0.0.1:9000/listen = \/run\/php7.2-fpm.sock/g" ${fpm_pool} && \
 	sed -i -e "s/listen.owner = www-data/listen.owner = nginx/g" ${fpm_pool} && \
 	sed -i -e "s/listen.group = www-data/listen.group = nginx/g" ${fpm_pool} && \
 	sed -i -e "s/user = www-data/user = nginx/g" ${fpm_pool} && \
