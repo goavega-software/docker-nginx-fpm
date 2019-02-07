@@ -43,7 +43,7 @@ RUN apt-get update \
 	apt-get -y --purge autoremove && rm -rf /var/lib/apt/lists/* \
 	&& echo "deb http://nginx.org/packages/ubuntu/ bionic nginx" >> /etc/apt/sources.list \
 	&& apt-get update \
-	&& apt-get install --no-install-recommends --no-install-suggests -y nginx=${NGINX_VERSION} gettext-base
+	&& apt-get install --no-install-recommends --no-install-suggests -y nginx gettext-base
 #--------------|
 # php-fpm + mod|
 #--------------|
