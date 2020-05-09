@@ -1,4 +1,4 @@
-FROM php:7.1-fpm-alpine
+FROM php:7.3-fpm-alpine
 LABEL MAINTAINER Goavega Docker Maintainers
 #setup environment variables
 #version variables
