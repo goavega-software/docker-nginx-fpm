@@ -184,10 +184,12 @@ COPY ./confs/opcache.ini ${php_scan_ini_dir}
 COPY ./wp_env.sh /usr/local/bin/
 
 RUN chmod u+x /usr/local/bin/wp_env.sh
+# since nginx is sidecarred, we don't want to listen on tcp
+# switch to socks and delete the zz-docker.conf file
 RUN set -eux && \
 	chmod u+x /usr/local/bin/entrypoint.sh && \
-	rm /usr/local/etc/php-fpm.d/docker.conf && \
-	rm /usr/local/etc/php-fpm.d/zz-docker.conf
+	rm /usr/local/etc/php-fpm.d/zz-docker.conf && \
+    mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 WORKDIR ${APP_HOME}
 
