@@ -37,8 +37,6 @@ RUN apk add --no-cache freetype-dev \
 	openrc \
 	openssh \
 	supervisor \
-	&& docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
-	&& docker-php-ext-install -j$(nproc) gd \
 	&& apk del freetype-dev \
 	libjpeg-turbo-dev \
 	libpng-dev \
@@ -48,7 +46,7 @@ RUN apk add --no-cache freetype-dev \
 #-----------------------|
 #   nginx               |
 #-----------------------|
-RUN apk add --no-cache nginx 
+RUN apk add --no-cache nginx
 
 #--------------|
 # make nginx   |
@@ -65,14 +63,15 @@ RUN set -ex && \
 	sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 8M/g" ${FPM_POOL_CONF} && \
 	sed -i -e "s/variables_order = \"GPCS\"/variables_order = \"EGPCS\"/g" ${FPM_POOL_CONF} && \
 	sed -i -e "s/listen = 127.0.0.1:9000/listen = \/run\/php7.0-fpm.sock/g" ${FPM_POOL_CONF} && \
-	sed -i -e "s/listen.owner = www-data/listen.owner = nginx/g" ${FPM_POOL_CONF} && \
+	sed -i -e "s/;listen.owner = www-data/listen.owner = nginx/g" ${FPM_POOL_CONF} && \
 	sed -i -e "s/listen.group = www-data/listen.group = nginx/g" ${FPM_POOL_CONF} && \
 	sed -i -e "s/user = www-data/user = nginx/g" ${FPM_POOL_CONF} && \
 	sed -i -e "s/group = www-data/group = nginx/g" ${FPM_POOL_CONF} && \
 	sed -i -e "s/;catch_workers_output\s*=\s*no/catch_workers_output = yes/g" ${FPM_POOL_CONF} && \
 	sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" ${FPM_POOL_CONF}
+	#include=etc/php-fpm.d/*.conf
 #copy configs
-COPY ./confs/default.conf /etc/nginx/conf.d/
+COPY ./confs/default.conf /etc/nginx/http.d/
 COPY ./wwwroot/* ${APP_HOME}/
 COPY ./entrypoint.sh /usr/local/bin/
 COPY ./confs/sshd_config /etc/ssh/
