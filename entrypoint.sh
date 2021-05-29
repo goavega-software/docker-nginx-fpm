@@ -27,8 +27,8 @@ set_var_if_null(){
 set -e
 test ! -d "$APP_HOME" && echo "INFO: $APP_HOME not found. creating ..." && mkdir -p "$APP_HOME"
 chown -R nginx:nginx $APP_HOME
-echo 'INFO: exporting variables'
-wp_env.sh
+# echo 'INFO: exporting variables'
+# wp_env.sh
 echo 'INFO: starting fpm'
 php-fpm -D
 echo 'INFO: starting nginx'
