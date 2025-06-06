@@ -23,8 +23,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t goavega-software/docker-nginx-fpm:${{ env.VERSION }} .
+          docker build -t goavega/docker-nginx-fpm:${{ env.VERSION }} .
 
       - name: Push Docker image
         run: |
-          docker push goavega-software/docker-nginx-fpm:${{ env.VERSION }}
+          docker push goavega/docker-nginx-fpm:${{ env.VERSION }}
