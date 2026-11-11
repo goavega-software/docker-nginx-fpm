@@ -40,8 +40,7 @@ RUN apk add --no-cache freetype-dev libjpeg-turbo-dev libpng-dev openrc openssh 
 #-----------------------|
 #   nginx               |
 #-----------------------|
-ENV NGINX_VERSION=1.27.5
-ENV NJS_VERSION=0.9.0
+ENV NGINX_VERSION=1.31.8
 ENV PKG_RELEASE=1
 
 RUN set -x \
@@ -54,7 +53,7 @@ RUN set -x \
     nginx-module-xslt=${NGINX_VERSION}-r${PKG_RELEASE} \
     nginx-module-geoip=${NGINX_VERSION}-r${PKG_RELEASE} \
     nginx-module-image-filter=${NGINX_VERSION}-r${PKG_RELEASE} \
-    nginx-module-njs=${NGINX_VERSION}.${NJS_VERSION}-r${PKG_RELEASE} \
+    nginx-module-njs~${NGINX_VERSION} \
     " \
     && case "$apkArch" in \
     x86_64|aarch64) \
