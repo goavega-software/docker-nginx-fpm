@@ -1,17 +1,19 @@
 FROM php:8.3-fpm-alpine
 LABEL MAINTAINER Goavega Docker Maintainers
 
-
-# setup env variables and php 8.2 redis
+# setup env variables and php 8.3 redis
 ENV DOCKER_BUILD_DIR /dockerbuild
 ENV PHP_REDIS_VERSION 6.0.2
-ENV NGINX_VERSION 1.21.0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
-#directories
+ENV NGINX_VERSION 1.21.0
+
+# directories
 ENV NGINX_CONF /etc/nginx/nginx.conf
 ENV APP_HOME /home/site/wwwroot/
+
 # php confs
 ENV php_scan_ini_dir /usr/local/etc/php/conf.d/
 ENV FPM_POOL_CONF /usr/local/etc/php-fpm.d/www.conf
+
 # ssh
 ENV SSH_PASSWD "root:Docker!"
 WORKDIR $DOCKER_BUILD_DIR
@@ -103,6 +105,7 @@ RUN set -x \
     && ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log \
     && mkdir /docker-entrypoint.d
+
 #--------------|
 # make nginx   |
 # nondaemon    |
@@ -111,20 +114,26 @@ RUN set -e \
     && echo "$SSH_PASSWD" | chpasswd \
     && echo "daemon off;" >> ${NGINX_CONF}
 
-# Nginx and php-fpm config (docker nginx runs nginx user - change fpm to use same user)
-RUN set -ex && \
-    sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${FPM_POOL_CONF} && \
-    sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = 8M/g" ${FPM_POOL_CONF} && \
-    sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 8M/g" ${FPM_POOL_CONF} && \
-    sed -i -e "s/variables_order = \"GPCS\"/variables_order = \"EGPCS\"/g" ${FPM_POOL_CONF} && \
-    sed -i -e "s/listen = 127.0.0.1:9000/listen = \/run\/php-fpm.sock/g" ${FPM_POOL_CONF} && \
-    sed -i -e "s/;listen.owner = www-data/listen.owner = nginx/g" ${FPM_POOL_CONF} && \
-    sed -i -e "s/;listen.group = www-data/listen.group = nginx/g" ${FPM_POOL_CONF} && \
-    sed -i -e "s/user = www-data/user = nginx/g" ${FPM_POOL_CONF} && \
-    sed -i -e "s/group = www-data/group = nginx/g" ${FPM_POOL_CONF} && \
-    sed -i -e "s/;catch_workers_output\s*=\s*no/catch_workers_output = yes/g" ${FPM_POOL_CONF} && \
-    sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" ${FPM_POOL_CONF} && \
-    sed -i -e "s/;clear_env\s*=\s*no/clear_env=no/g" ${FPM_POOL_CONF}
+# PHP.ini overrides (placed in conf.d so PHP actually loads them)
+RUN { \
+    echo 'cgi.fix_pathinfo = 0'; \
+    echo 'upload_max_filesize = 8M'; \
+    echo 'post_max_size = 8M'; \
+    echo 'variables_order = "EGPCS"'; \
+} > ${php_scan_ini_dir}/custom.ini
+
+# PHP-FPM pool overrides (zz-custom.conf loads last and overrides www.conf & zz-docker.conf)
+RUN { \
+    echo '[www]'; \
+    echo 'user = nginx'; \
+    echo 'group = nginx'; \
+    echo 'listen = /run/php-fpm.sock'; \
+    echo 'listen.owner = nginx'; \
+    echo 'listen.group = nginx'; \
+    echo 'listen.mode = 0660'; \
+    echo 'catch_workers_output = yes'; \
+    echo 'clear_env = no'; \
+} > /usr/local/etc/php-fpm.d/zz-custom.conf
 
 # copy configs
 COPY ./confs/default.conf /etc/nginx/conf.d/
@@ -134,10 +143,10 @@ COPY ./confs/sshd_config /etc/ssh/
 COPY ./confs/opcache.ini ${php_scan_ini_dir}
 COPY ./wp_env.sh /usr/local/bin/
 
-RUN chmod u+x /usr/local/bin/wp_env.sh
-RUN chmod u+x /usr/local/bin/entrypoint.sh
+RUN chmod u+x /usr/local/bin/wp_env.sh \
+    && chmod u+x /usr/local/bin/entrypoint.sh
 
-# cleanup default docker php-fpm conf
+# use production php.ini
 RUN rm /usr/local/etc/php-fpm.d/zz-docker.conf \
     && mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
